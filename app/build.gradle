@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "jp.co.orifice.androidjava_pcmrecorder"
-        minSdkVersion 25
+        applicationId "jp.co.orifice.pcm_recorder"
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
