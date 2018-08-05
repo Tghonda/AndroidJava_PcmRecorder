@@ -120,11 +120,11 @@ public class AudioCapturePcm {
             pushCount = 0;
         }
 
-        private int popBlocking(short[] popBuf, int popIdx, int len, double waitTime) {
+        private int popBlocking(short[] popBuf, int popOffset, int popSamples, double waitTime) {
             // config...
             final int waitTics = 2;         // polling time (msec).
 
-            while (len > (pushCount - popCount)) {
+            while (popSamples > (pushCount - popCount)) {
                 try {
                     Thread.sleep(waitTics);
                 }catch(InterruptedException e){
@@ -137,20 +137,20 @@ public class AudioCapturePcm {
                 }
             }
 
-            int sidx = (int)(popCount % ringBuf.length);
-            int rsize = len;
-            int tailLength = ringBuf.length - sidx;
-            if (len > tailLength) {
-                System.arraycopy(ringBuf, sidx, popBuf, popIdx, tailLength);
-                len -= tailLength;
-                popIdx  += tailLength;
+            int rbufOffset = (int)(popCount % ringBuf.length);
+            int copyLength = popSamples;
+            int tailLength = ringBuf.length - rbufOffset;
+            if (popSamples > tailLength) {
+                System.arraycopy(ringBuf, rbufOffset, popBuf, popOffset, tailLength);
+                popSamples -= tailLength;
+                popOffset  += tailLength;
                 popCount += tailLength;
-                sidx = (int)(pushCount % ringBuf.length);
+                rbufOffset = 0;
             }
-            System.arraycopy(ringBuf, sidx, popBuf, popIdx, len);
-            popCount += len;
+            System.arraycopy(ringBuf, rbufOffset, popBuf, popOffset, popSamples);
+            popCount += popSamples;
 
-            return rsize;
+            return copyLength;
         }
     }
 }
